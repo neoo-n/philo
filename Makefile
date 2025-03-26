@@ -1,8 +1,9 @@
 NAME	=	philo
-SRCS	=	$(addprefix srcs/, main.c)
-OBJS	=	${SRCS:%.c=${OBJDIR}/%.o}
+SRCS	=	$(addprefix srcs/, main.c philo.c\
+								ft_usleep.c utils.c)
+OBJS	=	${SRCS:srcs/%.c=${OBJDIR}/%.o}
 CC		=	gcc
-CFLAGS	=	-Werror -Wextra -Wall -g
+CFLAGS	=	-Werror -Wextra -Wall -g -lpthread
 OBJDIR	=	objets
 
 # Colors and style
@@ -33,7 +34,7 @@ header:
 ${NAME}:	${OBJS}
 	@${CC} ${CFLAGS} ${OBJS} -o ${NAME}
 
-${OBJDIR}/%.o: %.c | ${OBJDIR}
+${OBJDIR}/%.o: srcs/%.c | ${OBJDIR}
 	@${CC} ${CFLAGS} -c -o $@ $<
 
 ${OBJDIR}:
