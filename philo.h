@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 12:02:57 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/03/27 11:07:12 by marvin           ###   ########.fr       */
+/*   Updated: 2025/03/27 15:38:08 by marvin           ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -20,22 +20,28 @@
 # include <sys/time.h>
 # include <pthread.h>
 
-// struct
-
+// STRUCT
 typedef struct	s_philo
 {
 	int				philo_id;
-	pthread_mutex_t	mutex;
+	int				**fork;
+	int				*values;
+	pthread_mutex_t	*mutex;
 }				t_philo;
 
 
 // FUNCTIONS
-int		philo(int *value);
+int			philo(int *value, t_philo *data);
 
 // utils
-void	ft_usleep(long long waittime);
-int		ft_atoi(const char *str);
-void    *ft_calloc(size_t count, size_t size);
+long long	time_ms(void);
+void		ft_usleep(long long waittime);
+int			ft_atoi(const char *str);
+void 	   *ft_calloc(size_t count, size_t size);
+int			ft_strlen(char *s);
 
+// cleanup and error
+void		cleanup(pthread_t *philo);
+void		print_err(char *s);
 
 #endif

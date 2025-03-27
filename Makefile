@@ -1,6 +1,6 @@
 NAME	=	philo
 SRCS	=	$(addprefix srcs/, main.c philo.c\
-								ft_usleep.c utils.c)
+								ft_usleep.c utils.c error_clean.c)
 OBJS	=	${SRCS:srcs/%.c=${OBJDIR}/%.o}
 CC		=	gcc
 CFLAGS	=	-Werror -Wextra -Wall -g -lpthread
@@ -41,7 +41,7 @@ ${OBJDIR}:
 	@mkdir -p ${OBJDIR}
 
 leaks: ${NAME}
-	@valgrind --leak-check=full --log-file=leakslogs.txt --show-leak-kinds=all ./minishell
+	@valgrind --leak-check=full --log-file=leakslogs.txt --show-leak-kinds=all ./philo
 
 clean:
 	@rm -rf ${OBJDIR}

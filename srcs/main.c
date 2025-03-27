@@ -1,14 +1,14 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 12:01:05 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/03/26 16:16:20 by dvauthey         ###   ########.fr       */
+/*   Updated: 2025/03/27 15:40:56 by marvin           ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../philo.h"
 
@@ -30,19 +30,27 @@ static void	init_value(int **value, char **av)
 
 int	main(int ac, char **av)
 {
-	int			*value;
+	int		error_philo;
+	t_philo	*data;
 
 	if (ac != 2)
 	{
 		ac_error(ac);
 		return (1);
 	}
-	value = NULL;
-	value = ft_calloc(1, sizeof(int));
-	if (!value)
+	data = ft_calloc(ft_atoi(av[1]), sizeof(t_philo));
+	if (!data)
 		return (1);
-	init_value(&value, av);
-	if (philo(value))
+	data.values = ft_calloc(1, sizeof(int));
+	if (!data.values)
+		return (1);
+	init_value(&data.values, av);
+	error_philo = philo(data);
+	if (data.values)
+		free(data.values);
+	if (data)
+		free(data);
+	if (error_philo)
 		return (1);
 	return (0);
 }

@@ -14,49 +14,50 @@
 
 static void *routine(void *arg)
 {
-	t_philo	data;
+	t_philo	*data;
 
-	data = *(t_philo *)arg;
-	pthread_mutex_lock(&data.mutex);
-	printf("i : %i\n", data.philo_id);
-	pthread_mutex_unlock(&data.mutex);
+	data = (t_philo *)arg;
+	while (1)
+	{
+		ft_sleep;
+	}
 	return (arg);
 }
 
-int	philo(int *value)
+int	philo(int *value, t_philo *data)
 {
-	t_philo			*data;
 	pthread_t		*philo;
+	// pthread_mutex_t	mutex;
 	int				i;
+	// int				*fork;
 
 	i = 0;
-	data = ft_calloc(value[0], sizeof(t_philo));
-	if (!data)
-		return (free(value), 1);
 	philo = ft_calloc(value[0], sizeof(pthread_t *));
 	if (!philo)
-		return (free(data), free(value), 1);
+		return (1);
+	// fork = ft_calloc(value[0], sizeof(int));
+	// if (!fork)
+	// 	return (free(philo), 1);
+	// if (pthread_mutex_init(&mutex, NULL) == -1)
+	// 	return (print_err("Mutex not init"), cleanup(philo), 1);
 	while (i < value[0])
 	{
-		pthread_mutex_init(&data[i].mutex, NULL);
 		data[i].philo_id = i;
-		if (pthread_create(&philo[data[i].philo_id], NULL, &routine, &data[i]))
-			write(2, "Error : thread not created\n", 27);
+		// data[i].mutex = &mutex;
+		// data[i].fork = &fork;
+		if (pthread_create(&philo[i], NULL, &routine, &data[i]))
+			return (print_err("Thread not created"), cleanup(philo), 1);
 		i++;
 	}
 	i = 0;
 	while (i < value[0])
 	{
 		if (pthread_join(philo[i], NULL))
-			write(2, "Error : Thread not joined\n", 26);
+			return (print_err("Thread not joined"), cleanup(philo), 1);
 		i++;
 	}
-	free(philo);
-	i = 0;
-	while (i < value[0])
-	{
-		pthread_mutex_destroy(&data[i].mutex);
-		i++;
-	}
+	// if (pthread_mutex_destroy(&mutex))
+	// 	return (print_err("Mutex not destroyed"), cleanup(philo), 1);
+	cleanup (philo);
 	return (0);
 }
