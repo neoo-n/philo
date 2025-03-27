@@ -18,27 +18,29 @@ static void *routine(void *arg)
 
 	data = *(t_philo *)arg;
 	pthread_mutex_lock(&data.mutex);
-	printf("i : %i\n", *data.nb_ph);
+	printf("i : %i\n", data.philo_id);
 	pthread_mutex_unlock(&data.mutex);
 	return (arg);
 }
 
 int	philo(int *value)
 {
-	t_philo			data;
+	t_philo			*data;
 	pthread_t		*philo;
 	int				i;
 
 	i = 0;
+	data = ft_calloc(value[0], sizeof(t_philo));
+	if (!data)
+		return (free(value), 1);
 	philo = ft_calloc(value[0], sizeof(pthread_t *));
 	if (!philo)
-		return (free(value), 1);
-	pthread_mutex_init(&data.mutex, NULL);
+		return (free(data), free(value), 1);
 	while (i < value[0])
 	{
-		*data.nb_ph = (int)ft_calloc(1, sizeof(int));
-		*data.nb_ph = i;
-		if (pthread_create(&philo[*data.nb_ph], NULL, &routine, &data))
+		pthread_mutex_init(&data[i].mutex, NULL);
+		data[i].philo_id = i;
+		if (pthread_create(&philo[data[i].philo_id], NULL, &routine, &data[i]))
 			write(2, "Error : thread not created\n", 27);
 		i++;
 	}
@@ -50,6 +52,11 @@ int	philo(int *value)
 		i++;
 	}
 	free(philo);
-	pthread_mutex_destroy(&data.mutex);
+	i = 0;
+	while (i < value[0])
+	{
+		pthread_mutex_destroy(&data[i].mutex);
+		i++;
+	}
 	return (0);
 }
