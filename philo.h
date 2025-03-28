@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 12:02:57 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/03/27 15:38:08 by marvin           ###   ########.fr       */
+/*   Updated: 2025/03/28 14:05:59 by marvin           ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -24,14 +24,17 @@
 typedef struct	s_philo
 {
 	int				philo_id;
-	int				**fork;
-	int				*values;
+	int				nb_philo;
+	int				die;
+	int				eat;
+	int				sleep;
+	int				*forks;
 	pthread_mutex_t	*mutex;
 }				t_philo;
 
 
 // FUNCTIONS
-int			philo(int *value, t_philo *data);
+int			philo(t_philo *data);
 
 // utils
 long long	time_ms(void);

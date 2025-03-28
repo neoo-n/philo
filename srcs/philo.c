@@ -17,47 +17,48 @@ static void *routine(void *arg)
 	t_philo	*data;
 
 	data = (t_philo *)arg;
+
 	while (1)
 	{
-		ft_sleep;
+		// ft_sleep;
 	}
 	return (arg);
 }
 
-int	philo(int *value, t_philo *data)
+int	philo(t_philo *data)
 {
 	pthread_t		*philo;
-	// pthread_mutex_t	mutex;
+	pthread_mutex_t	mutex;
 	int				i;
-	// int				*fork;
+	int				*forks;
 
 	i = 0;
-	philo = ft_calloc(value[0], sizeof(pthread_t *));
+	philo = ft_calloc(data->nb_philo, sizeof(pthread_t *));
 	if (!philo)
 		return (1);
-	// fork = ft_calloc(value[0], sizeof(int));
-	// if (!fork)
-	// 	return (free(philo), 1);
-	// if (pthread_mutex_init(&mutex, NULL) == -1)
-	// 	return (print_err("Mutex not init"), cleanup(philo), 1);
-	while (i < value[0])
+	forks = ft_calloc(data->nb_philo, sizeof(int));
+	if (!forks)
+		return (cleanup(philo), 1);
+	if (pthread_mutex_init(&mutex, NULL) == -1)
+		return (print_err("Mutex not init"), cleanup(philo), 1);
+	while (i < data->nb_philo)
 	{
 		data[i].philo_id = i;
-		// data[i].mutex = &mutex;
-		// data[i].fork = &fork;
+		data[i].mutex = &mutex;
+		data[i].forks = &forks;
 		if (pthread_create(&philo[i], NULL, &routine, &data[i]))
 			return (print_err("Thread not created"), cleanup(philo), 1);
 		i++;
 	}
 	i = 0;
-	while (i < value[0])
+	while (i < data->nb_philo)
 	{
 		if (pthread_join(philo[i], NULL))
 			return (print_err("Thread not joined"), cleanup(philo), 1);
 		i++;
 	}
-	// if (pthread_mutex_destroy(&mutex))
-	// 	return (print_err("Mutex not destroyed"), cleanup(philo), 1);
+	if (pthread_mutex_destroy(&mutex))
+		return (print_err("Mutex not destroyed"), cleanup(philo), 1);
 	cleanup (philo);
 	return (0);
 }
