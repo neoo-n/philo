@@ -15,12 +15,14 @@
 static void *routine(void *arg)
 {
 	t_philo	*data;
+	int i;
 
 	data = (t_philo *)arg;
-
-	while (1)
+	i = 0;
+	while (i < 4)
 	{
-		// ft_sleep;
+		ft_sleep(data);
+		i++;
 	}
 	return (arg);
 }
@@ -43,7 +45,7 @@ int	philo(t_philo *data)
 		return (print_err("Mutex not init"), cleanup(philo), 1);
 	while (i < data->nb_philo)
 	{
-		data[i].philo_id = i;
+		data[i].philo_id = i + 1;
 		data[i].mutex = &mutex;
 		data[i].forks = &forks;
 		if (pthread_create(&philo[i], NULL, &routine, &data[i]))
