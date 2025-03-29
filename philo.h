@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 12:02:57 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/03/28 14:40:12 by marvin           ###   ########.fr       */
+/*   Updated: 2025/03/29 19:53:17 by dvauthey         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -28,12 +28,16 @@ typedef struct	s_philo
 	int				die;
 	int				eat;
 	int				sleep;
+	int				lfork_id;
+	int				rfork_id;
 	int				**forks;
-	pthread_mutex_t	*mutex;
+	pthread_mutex_t	*m_lfork;
+	pthread_mutex_t	*m_rfork;
 }				t_philo;
 
 
 // FUNCTIONS
+t_philo		*init_data(pthread_mutex_t **mutex, int *values, int **forks);
 int			philo(t_philo *data);
 void		ft_sleep(t_philo *data);
 void		ft_eat(t_philo *data);
@@ -42,7 +46,7 @@ void		ft_eat(t_philo *data);
 long long	time_ms(void);
 void		ft_usleep(long long waittime);
 int			ft_atoi(const char *str);
-void 	   *ft_calloc(size_t count, size_t size);
+void		*ft_calloc(size_t count, size_t size);
 int			ft_strlen(char *s);
 
 // cleanup and error

@@ -1,5 +1,5 @@
 NAME	=	philo
-SRCS	=	$(addprefix srcs/, main.c philo.c actions.c\
+SRCS	=	$(addprefix srcs/, main.c init_data.c philo.c actions.c\
 								ft_usleep.c utils.c error_clean.c)
 OBJS	=	${SRCS:srcs/%.c=${OBJDIR}/%.o}
 CC		=	gcc

@@ -3,67 +3,64 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/25 12:01:05 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/03/28 14:38:38 by marvin           ###   ########.fr       */
+/*   Created: 2025/03/29 19:44:36 by dvauthey          #+#    #+#             */
+/*   Updated: 2025/03/29 19:59:13 by dvauthey         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
 #include "../philo.h"
 
-static void	ac_error(int ac)
+static int	ac_error(int ac)
 {
-	if (ac > 5)
-		write(2, "Too many arguments\n", 19);
-	if (ac < 5)
-		write(2, "Too few arguments\n", 18);
+	if (ac != 5)
+	{
+		if (ac > 5)
+			write(2, "Too many arguments\n", 19);
+		if (ac < 5)
+			write(2, "Too few arguments\n", 18);
+		return (1);
+	}
+	return (0);
 }
 
-static t_philo	*init_data(char **av)
+static void	destroy_mutex(pthread_mutex_t **mutex, int nb)
 {
-	int		i;
-	int		value[4];
-	t_philo	*data;
+	int	i;
 
 	i = 0;
-	value[0] = ft_atoi(av[1]);
-	value[1] = ft_atoi(av[2]);
-	value[2] = ft_atoi(av[3]);
-	value[3] = ft_atoi(av[4]);
-	printf("hiii\n");
-	data = ft_calloc(value[0], sizeof(t_philo));
-	if (!data)
-		return (NULL);
-	while (i < value[0])
+	while (i < nb)
 	{
-		data[i].nb_philo = value[0];
-		data[i].die = value[1];
-		data[i].eat = value[2];
-		data[i].sleep = value[3];
+		if (pthread_mutex_destroy(mutex[i]))
+			return (print_err("Mutex not destroyed"));
 		i++;
 	}
-	return (data);
 }
 
 int	main(int ac, char **av)
 {
-	int		error_philo;
-	t_philo	*data;
+	int				values[4];
+	int				i;
+	t_philo			*data;
+	pthread_mutex_t	*mutex;
+	int				*forks;
 
-	if (ac != 5)
-	{
-		ac_error(ac);
+	if (ac_error(ac))
 		return (1);
+	i = 0;
+	while (i < 4)
+	{
+		values[i] = ft_atoi(av[i + 1]);
+		i++;
 	}
-	data = init_data(av);
-	printf("hiii\n");
+	forks = ft_calloc(values[0], sizeof(int));
+	if (!forks)
+		return (1);
+	data = init_data(&mutex, values, &forks);
 	if (!data)
 		return (1);
-	error_philo = philo(data);
-	if (data)
-		free(data);
-	if (error_philo)
-		return (1);
+	if (philo(data))
+		return (free(data), destroy_mutex(&mutex, values[0]), 1);
 	return (0);
 }

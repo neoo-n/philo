@@ -21,6 +21,16 @@ static void *routine(void *arg)
 	i = 0;
 	while (i < 4)
 	{
+		printf("here : lfork : %i, rfork : %i\n", data->lfork_id, data->rfork_id);
+		if (!((*data->forks)[data->lfork_id]) && !((*data->forks)[data->rfork_id]))
+		{
+			printf("in here\n");
+			pthread_mutex_lock(data->m_lfork);
+			pthread_mutex_lock(data->m_rfork);
+			ft_eat(data);
+			pthread_mutex_lock(data->m_lfork);
+			pthread_mutex_lock(data->m_rfork);
+		}
 		ft_sleep(data);
 		i++;
 	}
@@ -30,37 +40,25 @@ static void *routine(void *arg)
 int	philo(t_philo *data)
 {
 	pthread_t		*philo;
-	pthread_mutex_t	mutex;
 	int				i;
-	int				*forks;
 
 	i = 0;
-	philo = ft_calloc(data->nb_philo, sizeof(pthread_t *));
+	philo = ft_calloc(data[0].nb_philo, sizeof(pthread_t *));
 	if (!philo)
 		return (1);
-	forks = ft_calloc(data->nb_philo, sizeof(int));
-	if (!forks)
-		return (cleanup(philo), 1);
-	if (pthread_mutex_init(&mutex, NULL) == -1)
-		return (print_err("Mutex not init"), cleanup(philo), 1);
-	while (i < data->nb_philo)
+	while (i < data[0].nb_philo)
 	{
-		data[i].philo_id = i + 1;
-		data[i].mutex = &mutex;
-		data[i].forks = &forks;
 		if (pthread_create(&philo[i], NULL, &routine, &data[i]))
 			return (print_err("Thread not created"), cleanup(philo), 1);
 		i++;
 	}
 	i = 0;
-	while (i < data->nb_philo)
+	while (i < data[0].nb_philo)
 	{
 		if (pthread_join(philo[i], NULL))
 			return (print_err("Thread not joined"), cleanup(philo), 1);
 		i++;
 	}
-	if (pthread_mutex_destroy(&mutex))
-		return (print_err("Mutex not destroyed"), cleanup(philo), 1);
 	cleanup (philo);
 	return (0);
 }

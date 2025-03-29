@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   actions.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/27 15:31:26 by marvin            #+#    #+#             */
-/*   Updated: 2025/03/28 14:45:31 by marvin           ###   ########.fr       */
+/*   Created: 2025/03/29 19:44:56 by dvauthey          #+#    #+#             */
+/*   Updated: 2025/03/29 19:44:58 by dvauthey         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -21,11 +21,12 @@ void	ft_sleep(t_philo *data)
 
 void	ft_eat(t_philo *data)
 {
-	data->forks[data->philo_id - 1] = 1;
+	(*data->forks)[data->rfork_id] = 1;
 	printf("%lli %i has taken a right fork\n", time_ms(), data->philo_id);
-	if (data->philo_id == 1)
-		data->forks[data->nb_philo - 1] = 1;
-	else
-		data->forks[data->philo_id - 2] = 1;
+	(*data->forks)[data->lfork_id] = 1;
 	printf("%lli %i has taken a left fork\n", time_ms(), data->philo_id);
+	printf("%lli %i is eating\n", time_ms(), data->philo_id);
+	ft_usleep(data->eat);
+	(*data->forks)[data->rfork_id] = 0;
+	(*data->forks)[data->lfork_id] = 0;
 }
