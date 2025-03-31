@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
@@ -6,23 +6,41 @@
 /*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 19:44:36 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/03/30 16:25:39 by dvauthey         ###   ########.fr       */
+/*   Updated: 2025/03/31 17:40:30 by dvauthey         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../philo.h"
 
 static int	ac_error(int ac)
 {
-	if (ac != 5)
+	if (ac < 5)
 	{
-		if (ac > 5)
-			write(2, "Too many arguments\n", 19);
-		if (ac < 5)
-			write(2, "Too few arguments\n", 18);
+		write(2, "Too few arguments\n", 18);
+		return (1);
+	}
+	if (ac > 6)
+	{
+		write(2, "Too few arguments\n", 18);
 		return (1);
 	}
 	return (0);
+}
+
+static int	*init_val(char **av, int ac)
+{
+	int	*values;
+
+	values = ft_calloc(ac - 1, sizeof(int));
+	if (!values)
+		return (NULL);
+	values[0] = ft_atoi(av[1]);
+	values[1] = ft_atoi(av[2]);
+	values[2] = ft_atoi(av[3]);
+	values[3] = ft_atoi(av[4]);
+	if (ac == 6)
+		values[4] = ft_atoi(av[5]);
+	return (values);
 }
 
 static void	destroy_mutex(t_philo **data, int nb)
@@ -42,27 +60,23 @@ static void	destroy_mutex(t_philo **data, int nb)
 
 int	main(int ac, char **av)
 {
-	int				values[4];
-	int				i;
+	int				*values;
 	t_philo			*data;
-	int				*forks;
-	pthread_mutex_t	*mutex;
+	pthread_mutex_t	*fork;
 
 	if (ac_error(ac))
 		return (1);
-	i = 0;
-	while (i < 4)
-	{
-		values[i] = ft_atoi(av[i + 1]);
-		i++;
-	}
-	forks = ft_calloc(values[0], sizeof(int));
-	if (!forks)
+	values = init_val(av, ac);
+	if (!values)
 		return (1);
-	mutex = NULL;
-	data = init_data(values, &forks, &mutex);
+	if (values[0] == 0)
+		return (0);
+	data = ft_calloc(values[0], sizeof(t_philo));
 	if (!data)
-		return (free(forks), 1);
+		return (free(values), 1);
+	if (init_data(&data, values, &fork))
+		return (free(data), free(values), 1);
+	free(values);
 	if (philo(data))
 		return (free(data), destroy_mutex(&data, values[0]), 1);
 	return (0);

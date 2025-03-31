@@ -30,48 +30,60 @@ static pthread_mutex_t	*init_mutex(int nb)
 	return (mutex);
 }
 
-static void	init_values(t_philo *data, int *values, int i)
+static void	init_values(t_philo *data, int *values, int i, long long time)
 {
+	int	done_eat;
+	int	dead;
+
+	done_eat = 0;
+	dead = 0;
 	data->nb_philo = values[0];
 	data->die = values[1];
 	data->eat = values[2];
 	data->sleep = values[3];
-	data->philo_id = i + 1;
-}
-
-static void	init_forks(t_philo *data, int i, int **forks)
-{
-	data->forks = forks;
-	if (i == 0)
-		data->lfork_id = data->nb_philo - 1;
+	data->last_eat = 0;
+	if (values[4])
+		data->nb_eat_tot = values[4];
 	else
-		data->lfork_id = i - 1;
-	data->rfork_id = i;
-	
+		data->nb_eat_tot = -1;
+	data->count_eat = 0;
+	data->time = time;
+	data->philo_id = i + 1;
+	data->done_eat = &done_eat;
+	data->dead = &dead;
 }
 
-t_philo	*init_data(int *values, int **forks, pthread_mutex_t **mutex)
+int	init_data(t_philo **data, int *values, pthread_mutex_t **fork)
 {
 	int				i;
-	t_philo			*data;
+	long long		time;
+	pthread_mutex_t	death;
+	pthread_mutex_t	print;
+	pthread_mutex_t	m_eat;
 
 	i = 0;
-	data = ft_calloc(values[0], sizeof(t_philo));
-	if (!data)
-		return (NULL);
-	*mutex = init_mutex(values[0]);
-	if (!(*mutex))
-		return (free(data), NULL);
+	*fork = init_mutex(values[0]);
+	if (!*fork)
+		return (1);
+	if (pthread_mutex_init(&death, NULL))
+		return (print_err("Mutex not init"), free(fork), 1);
+	if (pthread_mutex_init(&print, NULL))
+		return (print_err("Mutex not init"), free(fork), 1);
+	if (pthread_mutex_init(&m_eat, NULL))
+		return (print_err("Mutex not init"), free(fork), 1);
+	time = time_ms();
 	while (i < values[0])
 	{
-		init_values(&data[i], values, i);
-		init_forks(&data[i], i, forks);
+		init_values(data[i], values, i, time);
+		(*data)[i].death = &death;
+		(*data)[i].print = &print;
+		(*data)[i].m_eat = &m_eat;
 		if (i == 0)
-			data->m_lfork = mutex[data->nb_philo - 1];
+			(*data)[i].m_lfork = &(*fork)[(*data)[i].nb_philo - 1];
 		else
-			data->m_lfork = mutex[i - 1];
-		data->m_rfork = mutex[i];
+			(*data)[i].m_lfork = &(*fork)[i - 1];
+		(*data)[i].m_rfork = &(*fork)[i];
 		i++;
 	}
-	return (data);
+	return (0);
 }

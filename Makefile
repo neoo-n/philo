@@ -1,6 +1,6 @@
 NAME	=	philo
 SRCS	=	$(addprefix srcs/, main.c init_data.c philo.c actions.c\
-								ft_usleep.c utils.c error_clean.c)
+								ft_usleep.c utils.c print_clean.c)
 OBJS	=	${SRCS:srcs/%.c=${OBJDIR}/%.o}
 CC		=	gcc
 CFLAGS	=	-Werror -Wextra -Wall -g -lpthread
