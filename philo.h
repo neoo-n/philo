@@ -6,7 +6,7 @@
 /*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 12:02:57 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/04/01 16:24:35 by dvauthey         ###   ########.fr       */
+/*   Updated: 2025/04/01 17:01:38 by dvauthey         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ typedef struct	s_philo
 
 typedef struct	s_data
 {
-	t_philo			*philo;
+	t_philo			**philo;
 	int				nb_philo;
 	int				done_eat;
 	int				dead;
@@ -56,7 +56,7 @@ typedef struct	s_data
 
 
 // FUNCTIONS
-t_philo		*init_philo(int *values, pthread_mutex_t **fork);
+t_philo		**init_philo(int *values, pthread_mutex_t **fork);
 int			init_data(t_data *data, pthread_mutex_t **shared, int *values,
 				pthread_mutex_t **fork);
 int			ft_philo(t_data *data);

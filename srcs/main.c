@@ -6,7 +6,7 @@
 /*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 19:44:36 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/04/01 16:28:19 by dvauthey         ###   ########.fr       */
+/*   Updated: 2025/04/01 17:10:17 by dvauthey         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,7 @@ int	main(int ac, char **av)
 		return (1);
 	if (init_data(&data, &shared, values, &fork))
 		return (free(values), 1);
-	free(values);
 	if (ft_philo(&data))
-		return (1);
+		return (free(values), 1);
 	return (0);
 }

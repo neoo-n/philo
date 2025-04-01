@@ -21,19 +21,18 @@ void	ft_sleep(t_philo *philo)
 
 void	ft_eat(t_philo *philo)
 {
-	printf("fork : %p\n", philo->m_lfork);
 	pthread_mutex_lock(philo->m_lfork);
 	print_actions(philo, "has taken a fork");
 	if (philo->nb_philo == 1)
 	{
 		pthread_mutex_unlock(philo->m_lfork);
-		ft_usleep(philo->die + 1);
+		ft_usleep(philo->die);
 		return ;
 	}
 	pthread_mutex_lock(philo->m_rfork);
 	print_actions(philo, "has taken a fork");
 	print_actions(philo, "is eating");
-	philo->last_eat = time_ms();
+	philo->last_eat = time_ms() - philo->time;
 	ft_usleep(philo->eat);
 	if (philo->nb_eat_tot > -1)
 	{

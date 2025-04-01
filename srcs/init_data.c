@@ -47,14 +47,14 @@ static void	init_values(t_philo *philo, int *values, int i, long long time)
 	philo->philo_id = i + 1;
 }
 
-t_philo	*init_philo(int *values, pthread_mutex_t **fork)
+t_philo	**init_philo(int *values, pthread_mutex_t **fork)
 {
 	int				i;
 	long long		time;
-	t_philo			*philo;
+	t_philo			**philo;
 
 	i = 0;
-	philo = ft_calloc(values[0], sizeof(t_philo));
+	philo = ft_calloc(values[0], sizeof(t_philo *));
 	if (!philo)
 		return (NULL);
 	*fork = init_mutex(values[0]);
@@ -63,12 +63,15 @@ t_philo	*init_philo(int *values, pthread_mutex_t **fork)
 	time = time_ms();
 	while (i < values[0])
 	{
-		init_values(&philo[i], values, i, time);
+		philo[i] = ft_calloc(1, sizeof(t_philo));
+		if (!philo[i])
+			return (0);
+		init_values(philo[i], values, i, time);
 		if (i == 0)
-			philo[i].m_lfork = &(*fork)[philo[i].nb_philo - 1];
+			philo[i]->m_lfork = &(*fork)[philo[i]->nb_philo - 1];
 		else
-			philo[i].m_lfork = &(*fork)[i - 1];
-		philo[i].m_rfork = &(*fork)[i];
+			philo[i]->m_lfork = &(*fork)[i - 1];
+		philo[i]->m_rfork = &(*fork)[i];
 		i++;
 	}
 	return (philo);
@@ -81,9 +84,9 @@ int	init_data(t_data *data, pthread_mutex_t **shared, int *values,
 
 	i = 0;
 	data->philo = init_philo(values, fork);
-	if (!data->philo)
+	if (!*data->philo)
 		return (1);
-	data->nb_philo = values[0] - 1;
+	data->nb_philo = values[0];
 	data->done_eat = 0;
 	data->dead = 0;
 	*shared = init_mutex(3);
@@ -94,12 +97,13 @@ int	init_data(t_data *data, pthread_mutex_t **shared, int *values,
 	data->m_eat = (*shared[0]);
 	while (i < values[0])
 	{
-		data->philo[i].done_eat = &data->done_eat;
-		data->philo[i].dead = &data->dead;
-		data->philo[i].death = &data->death;
-		data->philo[i].print = &data->print;
-		data->philo[i].m_eat = &data->m_eat;
+		(data->philo[i])->done_eat = &data->done_eat;
+		(data->philo[i])->dead = &data->dead;
+		(data->philo[i])->death = &data->death;
+		(data->philo[i])->print = &data->print;
+		(data->philo[i])->m_eat = &data->m_eat;
 		i++;
 	}
+	printf("nb : %i\n", data->nb_philo);
 	return (0);
 }
