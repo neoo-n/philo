@@ -14,23 +14,32 @@
 
 static void	*ft_end(void *arg)
 {
-	t_philo	*data;
+	t_data	*data;
+	int		i;
 
-	data = (t_philo *)arg;
+	data = (t_data *)arg;
+	i = 0;
 	while (1)
 	{
-		if (time_ms() - data->last_eat >= data->die)
+		while (i < data->nb_philo)
 		{
-			pthread_mutex_lock(data->death);
-			*(data->dead) = 1;
-			pthread_mutex_unlock(data->death);
-			print_actions(data, "died");
-			break ;
-		}
-		pthread_mutex_lock(data->m_eat);
-		if (*data->done_eat == data->nb_philo)
-		{
-
+			if (time_ms() - data->philo[i].last_eat > data->philo[i].die)
+			{
+				pthread_mutex_lock(&data->death);
+				data->dead = 1;
+				pthread_mutex_unlock(&data->death);
+				print_actions(data->philo, "died");
+				break ;
+			}
+			pthread_mutex_lock(&data->m_eat);
+			if (data->done_eat == data->nb_philo)
+			{
+				pthread_mutex_lock(&data->death);
+				data->dead = 1;
+				pthread_mutex_unlock(&data->death);
+				break ;
+			}
+			i++;
 		}
 	}
 	return (NULL);
@@ -38,46 +47,50 @@ static void	*ft_end(void *arg)
 
 static void *routine(void *arg)
 {
-	t_philo	*data;
+	t_philo	*philo;
 
-	data = (t_philo *)arg;
-	if (data->philo_id % 2 == 0)
+	philo = (t_philo *)arg;
+	if (philo->philo_id % 2 == 0)
 		ft_usleep(1);
-	data->last_eat = time_ms();
-	while (!is_dead(data))
+	philo->last_eat = time_ms();
+	printf("helpppppp 0\n");
+	while (!is_dead(philo))
 	{
-		ft_eat(data);
-		ft_sleep(data);
-		print_actions(data, "is thinking");
+		printf("helpppppp\n");
+		ft_eat(philo);
+		printf("helpppppp 1111\n");
+		ft_sleep(philo);
+		printf("helpppppp 22222\n");
+		print_actions(philo, "is thinking");
 	}
 	return (arg);
 }
 
-int	philo(t_philo *data)
+int	ft_philo(t_data *data)
 {
-	pthread_t		*philo;
-	pthread_t		end;
-	int				i;
+	pthread_t	*th_philo;
+	pthread_t	end;
+	int			i;
 
 	i = 0;
-	philo = ft_calloc(data[0].nb_philo, sizeof(pthread_t *));
-	if (!philo)
+	th_philo = ft_calloc(data->philo[0].nb_philo, sizeof(pthread_t *));
+	if (!th_philo)
 		return (1);
-	if (pthread_create(&end, NULL, &ft_end, &data[i]))
-		return (print_err("Thread not created"), cleanup(philo), 1);
-	while (i < data[0].nb_philo)
+	if (pthread_create(&end, NULL, &ft_end, &data))
+		return (print_err("Thread not created"), 1);
+	while (i < data->philo[0].nb_philo)
 	{
-		if (pthread_create(&philo[i], NULL, &routine, &data[i]))
-			return (print_err("Thread not created"), cleanup(philo), 1);
+		if (pthread_create(&th_philo[i], NULL, &routine, &(data->philo[i])))
+			return (print_err("Thread not created"), cleanup(th_philo), 1);
 		i++;
 	}
 	i = 0;
-	while (i < data[0].nb_philo)
+	while (i < data->philo[0].nb_philo)
 	{
-		if (pthread_join(philo[i], NULL))
-			return (print_err("Thread not joined"), cleanup(philo), 1);
+		if (pthread_join(th_philo[i], NULL))
+			return (print_err("Thread not joined"), cleanup(th_philo), 1);
 		i++;
 	}
-	cleanup (philo);
+	cleanup (th_philo);
 	return (0);
 }

@@ -1,7 +1,7 @@
 /******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_data.c                                        :+:      :+:    :+:   */
+/*   init_philo.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -30,59 +30,75 @@ static pthread_mutex_t	*init_mutex(int nb)
 	return (mutex);
 }
 
-static void	init_values(t_philo *data, int *values, int i, long long time)
+static void	init_values(t_philo *philo, int *values, int i, long long time)
 {
-	int	done_eat;
-	int	dead;
 
-	done_eat = 0;
-	dead = 0;
-	data->nb_philo = values[0];
-	data->die = values[1];
-	data->eat = values[2];
-	data->sleep = values[3];
-	data->last_eat = 0;
+	philo->nb_philo = values[0];
+	philo->die = values[1];
+	philo->eat = values[2];
+	philo->sleep = values[3];
+	philo->last_eat = 0;
 	if (values[4])
-		data->nb_eat_tot = values[4];
+		philo->nb_eat_tot = values[4];
 	else
-		data->nb_eat_tot = -1;
-	data->count_eat = 0;
-	data->time = time;
-	data->philo_id = i + 1;
-	data->done_eat = &done_eat;
-	data->dead = &dead;
+		philo->nb_eat_tot = -1;
+	philo->count_eat = 0;
+	philo->time = time;
+	philo->philo_id = i + 1;
 }
 
-int	init_data(t_philo **data, int *values, pthread_mutex_t **fork)
+t_philo	*init_philo(int *values, pthread_mutex_t **fork)
 {
 	int				i;
 	long long		time;
-	pthread_mutex_t	death;
-	pthread_mutex_t	print;
-	pthread_mutex_t	m_eat;
+	t_philo			*philo;
 
 	i = 0;
+	philo = ft_calloc(values[0], sizeof(t_philo));
+	if (!philo)
+		return (NULL);
 	*fork = init_mutex(values[0]);
 	if (!*fork)
-		return (1);
-	if (pthread_mutex_init(&death, NULL))
-		return (print_err("Mutex not init"), free(fork), 1);
-	if (pthread_mutex_init(&print, NULL))
-		return (print_err("Mutex not init"), free(fork), 1);
-	if (pthread_mutex_init(&m_eat, NULL))
-		return (print_err("Mutex not init"), free(fork), 1);
+		return (free(philo), NULL);
 	time = time_ms();
 	while (i < values[0])
 	{
-		init_values(data[i], values, i, time);
-		(*data)[i].death = &death;
-		(*data)[i].print = &print;
-		(*data)[i].m_eat = &m_eat;
+		init_values(&philo[i], values, i, time);
 		if (i == 0)
-			(*data)[i].m_lfork = &(*fork)[(*data)[i].nb_philo - 1];
+			philo[i].m_lfork = &(*fork)[philo[i].nb_philo - 1];
 		else
-			(*data)[i].m_lfork = &(*fork)[i - 1];
-		(*data)[i].m_rfork = &(*fork)[i];
+			philo[i].m_lfork = &(*fork)[i - 1];
+		philo[i].m_rfork = &(*fork)[i];
+		i++;
+	}
+	return (philo);
+}
+
+int	init_data(t_data *data, pthread_mutex_t **shared, int *values,
+	pthread_mutex_t **fork)
+{
+	int	i;
+
+	i = 0;
+	data->philo = init_philo(values, fork);
+	if (!data->philo)
+		return (1);
+	data->nb_philo = values[0] - 1;
+	data->done_eat = 0;
+	data->dead = 0;
+	*shared = init_mutex(3);
+	if (!*shared)
+		return (1);
+	data->death = (*shared[0]);
+	data->print = (*shared[0]);
+	data->m_eat = (*shared[0]);
+	while (i < values[0])
+	{
+		data->philo[i].done_eat = &data->done_eat;
+		data->philo[i].dead = &data->dead;
+		data->philo[i].death = &data->death;
+		data->philo[i].print = &data->print;
+		data->philo[i].m_eat = &data->m_eat;
 		i++;
 	}
 	return (0);

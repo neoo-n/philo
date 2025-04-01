@@ -6,7 +6,7 @@
 /*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 12:02:57 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/03/31 17:22:25 by dvauthey         ###   ########.fr       */
+/*   Updated: 2025/04/01 16:24:35 by dvauthey         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,9 @@ typedef struct	s_philo
 	long long		last_eat;
 	int				nb_eat_tot;
 	int				count_eat;
+	long long		sleep;
 	int				*done_eat;
 	int				*dead;
-	long long		sleep;
 	pthread_mutex_t	*m_lfork;
 	pthread_mutex_t	*m_rfork;
 	pthread_mutex_t	*death;
@@ -42,13 +42,27 @@ typedef struct	s_philo
 
 }				t_philo;
 
+typedef struct	s_data
+{
+	t_philo			*philo;
+	int				nb_philo;
+	int				done_eat;
+	int				dead;
+	pthread_mutex_t	death;
+	pthread_mutex_t	print;
+	pthread_mutex_t	m_eat;
+}				t_data;
+
+
 
 // FUNCTIONS
-int			init_data(t_philo **data, int *values, pthread_mutex_t **fork);
-int			philo(t_philo *data);
-void		ft_sleep(t_philo *data);
+t_philo		*init_philo(int *values, pthread_mutex_t **fork);
+int			init_data(t_data *data, pthread_mutex_t **shared, int *values,
+				pthread_mutex_t **fork);
+int			ft_philo(t_data *data);
+void		ft_sleep(t_philo *philo);
 void		ft_eat(t_philo *data);
-int			is_dead(t_philo *data);
+int			is_dead(t_philo *philo);
 
 // utils
 long long	time_ms(void);
@@ -56,10 +70,11 @@ void		ft_usleep(long long waittime);
 int			ft_atoi(const char *str);
 void		*ft_calloc(size_t count, size_t size);
 int			ft_strlen(char *s);
+void		init_var(int *a, int *b, int *c, int *d);
 
 // clean and print
 void		cleanup(pthread_t *philo);
 void		print_err(char *s);
-void		print_actions(t_philo *data, char *s);
+void		print_actions(t_philo *philo, char *s);
 
 #endif
