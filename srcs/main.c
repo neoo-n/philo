@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 19:44:36 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/04/01 17:10:17 by dvauthey         ###   ########.fr       */
+/*   Updated: 2025/04/02 17:28:00 by dvauthey         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #include "../philo.h"
 
@@ -30,7 +30,9 @@ static int	ac_error(int ac)
 static int	*init_val(char **av, int ac)
 {
 	int	*values;
+	int	i;
 
+	i = 0;
 	values = ft_calloc(ac, sizeof(int));
 	if (!values)
 		return (NULL);
@@ -40,6 +42,12 @@ static int	*init_val(char **av, int ac)
 	values[3] = ft_atoi(av[4]);
 	if (ac == 6)
 		values[4] = ft_atoi(av[5]);
+	while (i < ac - 1)
+	{
+		if (values[i] <= 0)
+			return (NULL);
+		i++;
+	}
 	return (values);
 }
 
@@ -63,16 +71,14 @@ int	main(int ac, char **av)
 	int				*values;
 	t_data			data;
 	pthread_mutex_t	*fork;
-	pthread_mutex_t	*shared;
+	// pthread_mutex_t	*shared;
 
 	if (ac_error(ac))
 		return (1);
-	if (ft_atoi(av[1]) == 0)
-		return (0);
 	values = init_val(av, ac);
 	if (!values)
-		return (1);
-	if (init_data(&data, &shared, values, &fork))
+		return (printf("Eroor with arguments\n"), 1);
+	if (init_data(&data, values, &fork))
 		return (free(values), 1);
 	if (ft_philo(&data))
 		return (free(values), 1);

@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 12:02:57 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/04/01 17:01:38 by dvauthey         ###   ########.fr       */
+/*   Updated: 2025/04/02 16:26:25 by dvauthey         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 #ifndef PHILO_H
 # define PHILO_H
@@ -28,17 +28,18 @@ typedef struct	s_philo
 	long long		time;
 	long long		die;
 	long long		eat;
+	long long		sleep;
 	long long		last_eat;
 	int				nb_eat_tot;
 	int				count_eat;
-	long long		sleep;
 	int				*done_eat;
 	int				*dead;
 	pthread_mutex_t	*m_lfork;
 	pthread_mutex_t	*m_rfork;
 	pthread_mutex_t	*death;
 	pthread_mutex_t	*print;
-	pthread_mutex_t	*m_eat;
+	pthread_mutex_t	*m_done_eat;
+	pthread_mutex_t	*m_last_eat;
 
 }				t_philo;
 
@@ -46,19 +47,21 @@ typedef struct	s_data
 {
 	t_philo			**philo;
 	int				nb_philo;
+	long long		time;
+	long long		die;
+	long long		eat;
+	long long		sleep;
 	int				done_eat;
 	int				dead;
 	pthread_mutex_t	death;
 	pthread_mutex_t	print;
-	pthread_mutex_t	m_eat;
+	pthread_mutex_t	m_done_eat;
+	pthread_mutex_t	m_last_eat;
 }				t_data;
 
 
-
 // FUNCTIONS
-t_philo		**init_philo(int *values, pthread_mutex_t **fork);
-int			init_data(t_data *data, pthread_mutex_t **shared, int *values,
-				pthread_mutex_t **fork);
+int			init_data(t_data *data, int *values, pthread_mutex_t **fork);
 int			ft_philo(t_data *data);
 void		ft_sleep(t_philo *philo);
 void		ft_eat(t_philo *data);
@@ -75,6 +78,6 @@ void		init_var(int *a, int *b, int *c, int *d);
 // clean and print
 void		cleanup(pthread_t *philo);
 void		print_err(char *s);
-void		print_actions(t_philo *philo, char *s);
+void		print_actions(t_philo *philo, char *s, int dying);
 
 #endif

@@ -47,10 +47,9 @@ static void	init_values(t_philo *philo, int *values, int i, long long time)
 	philo->philo_id = i + 1;
 }
 
-t_philo	**init_philo(int *values, pthread_mutex_t **fork)
+static t_philo	**init_philo(int *values, pthread_mutex_t **fork, long long time)
 {
 	int				i;
-	long long		time;
 	t_philo			**philo;
 
 	i = 0;
@@ -60,7 +59,6 @@ t_philo	**init_philo(int *values, pthread_mutex_t **fork)
 	*fork = init_mutex(values[0]);
 	if (!*fork)
 		return (free(philo), NULL);
-	time = time_ms();
 	while (i < values[0])
 	{
 		philo[i] = ft_calloc(1, sizeof(t_philo));
@@ -77,33 +75,40 @@ t_philo	**init_philo(int *values, pthread_mutex_t **fork)
 	return (philo);
 }
 
-int	init_data(t_data *data, pthread_mutex_t **shared, int *values,
-	pthread_mutex_t **fork)
+static void	init_ac(t_data *data, int *values)
+{
+	data->nb_philo = values[0];
+	data->die = values[1];
+	data->eat = values[2];
+	data->sleep = values[3];
+	data->done_eat = 0;
+	data->dead = 0;
+}
+
+int	init_data(t_data *data, int *values, pthread_mutex_t **fork)
 {
 	int	i;
 
 	i = 0;
-	data->philo = init_philo(values, fork);
+	data->time = time_ms();
+	data->philo = init_philo(values, fork, data->time);
 	if (!*data->philo)
 		return (1);
-	data->nb_philo = values[0];
-	data->done_eat = 0;
-	data->dead = 0;
-	*shared = init_mutex(3);
-	if (!*shared)
-		return (1);
-	data->death = (*shared[0]);
-	data->print = (*shared[0]);
-	data->m_eat = (*shared[0]);
+	init_ac(data, values);
+	if (pthread_mutex_init(&data->death, NULL) == -1
+		|| pthread_mutex_init(&data->print, NULL) == -1
+		|| pthread_mutex_init(&data->m_done_eat, NULL) == -1
+		|| pthread_mutex_init(&data->m_last_eat, NULL) == -1)
+		return (print_err("Mutex not init"), 1);
 	while (i < values[0])
 	{
 		(data->philo[i])->done_eat = &data->done_eat;
 		(data->philo[i])->dead = &data->dead;
 		(data->philo[i])->death = &data->death;
 		(data->philo[i])->print = &data->print;
-		(data->philo[i])->m_eat = &data->m_eat;
+		(data->philo[i])->m_done_eat = &data->m_done_eat;
+		(data->philo[i])->m_last_eat = &data->m_last_eat;
 		i++;
 	}
-	printf("nb : %i\n", data->nb_philo);
 	return (0);
 }

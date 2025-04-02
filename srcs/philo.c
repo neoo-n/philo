@@ -16,37 +16,42 @@ static void	*ft_end(void *arg)
 {
 	t_data	*data;
 	int		i;
+	int		end;
 
 	data = (t_data *)arg;
-	i = 0;
-	printf("here : %i\n", data->nb_philo);
+	end = 0;
 	while (1)
 	{
+		i = 0;
 		while (i < data->nb_philo)
 		{
-			if (time_ms() - data->philo[i]->time - data->philo[i]->last_eat >= data->philo[i]->die)
+			pthread_mutex_lock(&data->m_last_eat);
+			if (time_ms() - data->time - data->philo[i]->last_eat >= data->die)
 			{
-				printf("maybe :%lli, %lli, %lli, %lli\n", time_ms(), data->philo[i]->time, data->philo[i]->last_eat, time_ms() - data->philo[i]->time - data->philo[i]->last_eat);
+				pthread_mutex_unlock(&data->m_last_eat);
 				pthread_mutex_lock(&data->death);
 				data->dead = 1;
 				pthread_mutex_unlock(&data->death);
-				print_actions(data->philo[i], "died");
+				print_actions(data->philo[i], "died", 1);
+				end = 1;
 				break ;
 			}
-			pthread_mutex_lock(&data->m_eat);
+			pthread_mutex_unlock(&data->m_last_eat);
+			pthread_mutex_lock(&data->m_done_eat);
 			if (data->done_eat == data->nb_philo)
 			{
+				pthread_mutex_unlock(&data->m_done_eat);
 				pthread_mutex_lock(&data->death);
 				data->dead = 1;
 				pthread_mutex_unlock(&data->death);
-				pthread_mutex_unlock(&data->m_eat);
+				end = 1;
 				break ;
 			}
-			pthread_mutex_unlock(&data->m_eat);
+			pthread_mutex_unlock(&data->m_done_eat);
 			i++;
 		}
-		if (i == data->nb_philo)
-			i = 0;
+		if (end == 1)
+			break ;
 	}
 	return (NULL);
 }
@@ -61,9 +66,15 @@ static void *routine(void *arg)
 	philo->last_eat = time_ms();
 	while (!is_dead(philo))
 	{
+		if (is_dead(philo))
+			break ;
 		ft_eat(philo);
+		if (is_dead(philo))
+			break ;
 		ft_sleep(philo);
-		print_actions(philo, "is thinking");
+		if (is_dead(philo))
+			break ;
+		print_actions(philo, "is thinking", 0);
 	}
 	return (arg);
 }
@@ -78,7 +89,6 @@ int	ft_philo(t_data *data)
 	th_philo = ft_calloc(data->philo[0]->nb_philo, sizeof(pthread_t *));
 	if (!th_philo)
 		return (1);
-	printf("nbbbbbbbbb : %i\n", data->nb_philo);
 	if (pthread_create(&end, NULL, &ft_end, data))
 		return (print_err("Thread not created"), 1);
 	while (i < data->nb_philo)
