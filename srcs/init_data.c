@@ -83,6 +83,7 @@ static void	init_ac(t_data *data, int *values)
 	data->sleep = values[3];
 	data->done_eat = 0;
 	data->dead = 0;
+	data->end = 0;
 }
 
 int	init_data(t_data *data, int *values, pthread_mutex_t **fork)
@@ -98,13 +99,16 @@ int	init_data(t_data *data, int *values, pthread_mutex_t **fork)
 	if (pthread_mutex_init(&data->death, NULL) == -1
 		|| pthread_mutex_init(&data->print, NULL) == -1
 		|| pthread_mutex_init(&data->m_done_eat, NULL) == -1
-		|| pthread_mutex_init(&data->m_last_eat, NULL) == -1)
+		|| pthread_mutex_init(&data->m_last_eat, NULL) == -1
+		|| pthread_mutex_init(&data->end_meal, NULL) == -1)
 		return (print_err("Mutex not init"), 1);
 	while (i < values[0])
 	{
 		(data->philo[i])->done_eat = &data->done_eat;
 		(data->philo[i])->dead = &data->dead;
+		(data->philo[i])->end = &data->end;
 		(data->philo[i])->death = &data->death;
+		(data->philo[i])->end_meal = &data->end_meal;
 		(data->philo[i])->print = &data->print;
 		(data->philo[i])->m_done_eat = &data->m_done_eat;
 		(data->philo[i])->m_last_eat = &data->m_last_eat;

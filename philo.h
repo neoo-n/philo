@@ -6,7 +6,7 @@
 /*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 12:02:57 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/04/02 16:26:25 by dvauthey         ###   ########.fr       */
+/*   Updated: 2025/04/03 15:11:36 by dvauthey         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -34,9 +34,11 @@ typedef struct	s_philo
 	int				count_eat;
 	int				*done_eat;
 	int				*dead;
+	int				*end;
 	pthread_mutex_t	*m_lfork;
 	pthread_mutex_t	*m_rfork;
 	pthread_mutex_t	*death;
+	pthread_mutex_t	*end_meal;
 	pthread_mutex_t	*print;
 	pthread_mutex_t	*m_done_eat;
 	pthread_mutex_t	*m_last_eat;
@@ -53,7 +55,9 @@ typedef struct	s_data
 	long long		sleep;
 	int				done_eat;
 	int				dead;
+	int				end;
 	pthread_mutex_t	death;
+	pthread_mutex_t	end_meal;
 	pthread_mutex_t	print;
 	pthread_mutex_t	m_done_eat;
 	pthread_mutex_t	m_last_eat;

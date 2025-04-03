@@ -41,9 +41,9 @@ static void	*ft_end(void *arg)
 			if (data->done_eat == data->nb_philo)
 			{
 				pthread_mutex_unlock(&data->m_done_eat);
-				pthread_mutex_lock(&data->death);
-				data->dead = 1;
-				pthread_mutex_unlock(&data->death);
+				pthread_mutex_lock(&data->end_meal);
+				data->end = 1;
+				pthread_mutex_unlock(&data->end_meal);
 				end = 1;
 				break ;
 			}

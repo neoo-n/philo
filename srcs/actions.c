@@ -6,7 +6,7 @@
 /*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 19:44:56 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/04/02 17:47:46 by dvauthey         ###   ########.fr       */
+/*   Updated: 2025/04/03 15:15:08 by dvauthey         ###   ########.fr       */
 /*                                                                            */
 /******************************************************************************/
 
@@ -57,5 +57,12 @@ int	is_dead(t_philo *philo)
 		return (1);
 	}
 	pthread_mutex_unlock(philo->death);
+	pthread_mutex_lock(philo->end_meal);
+	if (*(philo->end) == 1)
+	{
+		pthread_mutex_unlock(philo->end_meal);
+		return (1);
+	}
+	pthread_mutex_unlock(philo->end_meal);
 	return (0);
 }
