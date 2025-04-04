@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 19:44:36 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/04/02 17:28:00 by dvauthey         ###   ########.fr       */
+/*   Updated: 2025/04/04 14:53:09 by dvauthey         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #include "../philo.h"
 
@@ -27,12 +27,36 @@ static int	ac_error(int ac)
 	return (0);
 }
 
+static int	is_num(char **av)
+{
+	int	i;
+	int	j;
+
+	j = 1;
+	while (av[j])
+	{
+		i = 0;
+		if (av[j][i] == '-' || av[j][i] == '+')
+			i++;
+		while (av[j][i])
+		{
+			if (av[j][i] < '0' || av[j][i] > '9')
+				return (0);
+			i++;
+		}
+		j++;
+	}
+	return (1);
+}
+
 static int	*init_val(char **av, int ac)
 {
 	int	*values;
 	int	i;
 
 	i = 0;
+	if (!is_num(av))
+		return (printf("Error : arguments not numbers\n"), NULL);
 	values = ft_calloc(ac, sizeof(int));
 	if (!values)
 		return (NULL);
@@ -45,42 +69,31 @@ static int	*init_val(char **av, int ac)
 	while (i < ac - 1)
 	{
 		if (values[i] <= 0)
-			return (NULL);
+		{
+			return (printf("Error : numerical arguments not valid\n"),
+				free(values), NULL);
+		}
 		i++;
 	}
 	return (values);
 }
-
-// static void	destroy_mutex(t_philo **philo, int nb)
-// {
-// 	int	i;
-
-// 	i = 0;
-// 	while (i < nb)
-// 	{
-// 		if (pthread_mutex_destroy(philo[i]->m_lfork))
-// 			return (print_err("Mutex not destroyed"));
-// 		if (pthread_mutex_destroy(philo[i]->m_rfork))
-// 			return (print_err("Mutex not destroyed"));
-// 		i++;
-// 	}
-// }
 
 int	main(int ac, char **av)
 {
 	int				*values;
 	t_data			data;
 	pthread_mutex_t	*fork;
-	// pthread_mutex_t	*shared;
 
 	if (ac_error(ac))
 		return (1);
 	values = init_val(av, ac);
 	if (!values)
-		return (printf("Eroor with arguments\n"), 1);
+		return (1);
 	if (init_data(&data, values, &fork))
 		return (free(values), 1);
+	free(values);
 	if (ft_philo(&data))
-		return (free(values), 1);
+		return (clean_data(&data, &fork), 1);
+	clean_data(&data, &fork);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 19:44:47 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/04/01 14:37:27 by dvauthey         ###   ########.fr       */
+/*   Updated: 2025/04/04 15:15:37 by dvauthey         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int	ft_atoi(const char *str)
 	return (result * isneg);
 }
 
-static void    ft_bzero(void *s, size_t n)
+static void	ft_bzero(void *s, size_t n)
 {
 	size_t			i;
 	unsigned char	*temp;
@@ -55,7 +55,7 @@ static void    ft_bzero(void *s, size_t n)
 	}
 }
 
-void    *ft_calloc(size_t count, size_t size)
+void	*ft_calloc(size_t count, size_t size)
 {
 	int	*tab;
 

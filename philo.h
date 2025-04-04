@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: dvauthey <dvauthey@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 12:02:57 by dvauthey          #+#    #+#             */
-/*   Updated: 2025/04/03 15:11:36 by dvauthey         ###   ########.fr       */
+/*   Updated: 2025/04/04 15:22:15 by dvauthey         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
@@ -21,7 +21,7 @@
 # include <pthread.h>
 
 // STRUCT
-typedef struct	s_philo
+typedef struct s_philo
 {
 	int				philo_id;
 	int				nb_philo;
@@ -45,7 +45,7 @@ typedef struct	s_philo
 
 }				t_philo;
 
-typedef struct	s_data
+typedef struct s_data
 {
 	t_philo			**philo;
 	int				nb_philo;
@@ -63,8 +63,8 @@ typedef struct	s_data
 	pthread_mutex_t	m_last_eat;
 }				t_data;
 
-
 // FUNCTIONS
+t_philo		**init_philo(int *values, pthread_mutex_t **fork, long long time);
 int			init_data(t_data *data, int *values, pthread_mutex_t **fork);
 int			ft_philo(t_data *data);
 void		ft_sleep(t_philo *philo);
@@ -80,7 +80,8 @@ int			ft_strlen(char *s);
 void		init_var(int *a, int *b, int *c, int *d);
 
 // clean and print
-void		cleanup(pthread_t *philo);
+void		clean_data(t_data *data, pthread_mutex_t **forks);
+void		free_philo(t_philo **philo, int n);
 void		print_err(char *s);
 void		print_actions(t_philo *philo, char *s, int dying);
 
